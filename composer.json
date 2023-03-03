@@ -1,0 +1,20 @@
+{
+    "name": "grupotoberto/jlmvc",
+    "description": "PHP tools to develop lite mvc websites",
+    "type": "library",
+    "require": {
+        "grupotoberto/jlweb": "^1.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "com\\grupotoberto\\jlmvc\\": ""
+        }
+    },
+    "authors": [
+        {
+            "name": "Grupo Toberto",
+            "email": "jlsystemsmex@hotmail.com"
+        }
+    ]
+}
