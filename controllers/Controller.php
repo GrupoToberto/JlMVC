@@ -88,4 +88,14 @@
             return $template;
         }
 
+        public function getResource($Params){
+            $uri=$_SERVER['DOCUMENT_ROOT'].'/res/public/'.$Params[0]; 
+            $file=fopen($uri, "r");
+            $res=fread($file,filesize($uri)); 
+            fclose($file);
+
+            header($Params[count($Params)-1]);
+            echo $res;
+        }
+
     }
