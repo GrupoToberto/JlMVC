@@ -1,9 +1,12 @@
 <?php
     namespace com\grupotoberto\jlmvc\controllers;
+    use com\grupotoberto\jlweb\WebManager as WM;
 
     class Controller{
-        
-        protected static function View(){
+        private static $lang;
+
+        protected static function View($lang){
+            self::$lang=$lang;
             $Aux=explode("\\", debug_backtrace()[1]['class']);
             $viewGroup=str_replace("Controller", "", $Aux[count($Aux)-1]);
             $view=debug_backtrace()[1]['function'];
@@ -33,8 +36,36 @@
 ;
                     $template=str_replace("@extends('".$layout."')", $fTemplate, $template);
                     
-                    $template=self::fixSections($template);
+                    $template=self::fixStrings($template);
                 }
+            }
+            catch(Exception $e){
+
+            }
+
+            return $template;
+        }
+
+        private static function fixStrings($template){
+            $nStrings=substr_count($template, "@string");
+            $Strings=array();
+            $i=$nStrings;
+
+            $folder=isset(self::$lang)?"/res/".self::$lang."/":"/res/";
+            WM::setResFolder($folder);
+
+            try{
+                while($i>0){
+                    $pos=strpos($template, '@string'); 
+                    $Strings[$i]=substr($template, $pos+9); 
+                    $posf=strpos($Strings[$i], "')");
+                    $Strings[$i]=substr($template, $pos+9, $posf); 
+    
+                    $template=str_replace("@string('".$Strings[$i]."')", WM::getString($Strings[$i]), $template);
+    
+                    $i--;
+                } 
+                $template=self::fixSections($template);
             }
             catch(Exception $e){
 

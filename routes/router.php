@@ -21,20 +21,27 @@
             $this->controller=!empty($url[0])?$url[0].'Controller':$DEFAULT_CONTROLLER;
             $this->method=!empty($url[1])?$url[1]:$DEFAULT_METHOD;
 
-            $i=2;
+            $lurl=count($url);
+
+            $i=$lurl-2;
             $j=0;
 
             $this->Params=array();
             $this->remainder;
-
+            
             while(isset($url[$i])){
-                $this->Params[$j]=$url[$i];
+                if($lurl>2 && $i>1){
+                    $this->Params[$j]=$url[$i];
+                    $j++; 
+                }     
+
                 $this->remainder.="/".$url[$i];
-                $j++; $i++;
+                $i++;
             }
             
-            $redirection=$this->search($this->controller, $this->method, $this->remainder);
-
+            if($lurl>=4)
+                $redirection=$this->search($url[$lurl-4], $url[$lurl-3], $this->remainder);
+               
             if(isset($redirection)){
                 $this->controller=$redirection->controller;
                 $this->method=$redirection->actionResult."";
