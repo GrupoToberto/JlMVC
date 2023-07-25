@@ -33,10 +33,12 @@
                     $file=fopen($uri, "r");
                     $fTemplate=fread($file,filesize($uri));
                     fclose($file);
-;
+
                     $template=str_replace("@extends('".$layout."')", $fTemplate, $template);
                     
                     $template=self::fixStrings($template);
+                    $template=self::fixSections($template);
+                    $template=self::fixViews($template);
                 }
             }
             catch(Exception $e){
@@ -65,7 +67,6 @@
     
                     $i--;
                 } 
-                $template=self::fixSections($template);
             }
             catch(Exception $e){
 
@@ -129,4 +130,43 @@
             echo $res;
         }
 
+        private static function fixViews($template){
+            $nViews=substr_count($template, "@view");
+            $Views=array();
+            $i=$nViews;
+
+            try{
+                while($i>0){
+                    $pos=strpos($template, '@view'); 
+                    $Views[$i]=substr($template, $pos+7); 
+                    $posf=strpos($Views[$i], "')");
+                    $Views[$i]=substr($template, $pos+7, $posf); 
+    
+                    $template=str_replace("@view('".$Views[$i]."')", self::getView($Views[$i]), $template);
+    
+                    $i--;
+                }
+                
+                $template=self::fixStrings($template);
+                $nViews=substr_count($template, "@view");
+
+                if($nViews>0)
+                    self::fixViews($template);
+            }
+            catch(Exception $e){
+
+            }
+
+            return $template;
+        }
+
+        private static function getView($location){
+            $uri=$_SERVER['DOCUMENT_ROOT']."/views/".$location.".html";
+
+            $file=fopen($uri, "r");
+            $view=fread($file,filesize($uri));
+            fclose($file);
+
+            return $view;
+        }
     }
